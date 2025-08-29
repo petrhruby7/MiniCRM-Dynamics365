@@ -1,0 +1,75 @@
+**REQ-001: Registration Number Uniqueness Validation**
+*Business Context:*
+Client registration numbers (IČO) must be unique across the system to prevent duplicate company records and maintain data integrity.
+
+*Functional Requirements:*
+Validate registration number uniqueness on Client record save
+Check against all existing active Client records
+Block save operation if duplicate is found
+Display clear error message to user specifying the conflict
+
+*Technical Requirements:*
+Implement OnSave event handler for Client form
+Use Xrm.WebApi to query existing records
+Handle async operations properly
+Exclude current record from uniqueness check (for updates)
+Consider only active records in validation
+
+*Error Handling:*
+Display user-friendly error message
+Prevent form save when duplicate detected
+Handle API call failures gracefully
+Log errors for troubleshooting
+
+*Acceptance Criteria:*
+User cannot save Client with existing registration number
+Clear error message displayed: "This registration number already exist for another client"
+Current record excluded from duplicate check during updates
+Performance: validation completes within 2 seconds
+
+
+**REQ-002: Client Orders Total Amount Calculator**
+*Business Context:*
+Automatically calculate total order value and classify clients by importance level with visual indicators.
+New Fields Required:
+
+*1 - Client Importance Level (Option Set) - 3 values:*
+Standard Customer
+Important Customer
+VIP Customer
+
+*2 - Total Orders Value (Currency field, read-only)*
+
+*Functional Requirements:*
+Calculate sum of all active Order amounts for current Client
+Set Client Importance Level based on total value thresholds
+Update both fields when Orders change
+Hide both fields when total = 0 or no orders exist
+Show fields as read-only when populated
+
+*Value Thresholds:*
+Standard: 0 - 100,000 CZK
+Important: 100,001 - 500,000 CZK
+VIP: 500,001+ CZK
+
+*Technical Requirements:*
+OnLoad event handler for initial calculation
+Orders subgrid refresh handler for real-time updates
+WebApi query to sum Order amounts with filter statecode = 0
+Field visibility logic (show/hide based on total value)
+Field security (read-only when populated)
+
+*Field Behavior:*
+Both fields hidden when no orders or total = 0
+Both fields visible and read-only when total > 0
+Automatic recalculation on subgrid changes
+
+*Performance Requirements:*
+Initial calculation < 3 seconds
+Subgrid updates < 2 seconds
+
+*Acceptance Criteria:*
+Fields hidden for clients with no orders
+Correct importance level set based on total value
+Real-time updates when orders added/modified/deleted
+Proper currency formatting in total field
