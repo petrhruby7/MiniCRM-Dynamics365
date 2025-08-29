@@ -1,0 +1,23 @@
+# --- Visual Studio / .NET ---
+.vs/
+*.user
+*.suo
+*.rsuser
+.userosscache
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease*/
+# Logs
+*.log
+# --- PCF / Node.js ---
+node_modules/
+dist/
+npm-debug.log
+yarn-error.log
+# --- Power Platform CLI ---
+*.tmp.zip
+# --- OS / Editor files ---
+.DS_Store
+Thumbs.db

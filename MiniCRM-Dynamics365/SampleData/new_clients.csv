@@ -1,0 +1,4 @@
+﻿"new_city","new_clientid","new_companyname","new_country","new_email","importsequencenumber","new_phone","new_registrationnumber","statuscode","statecode","new_street","timezoneruleversionnumber","utcconversiontimezonecode","versionnumber","new_zipcode","owningbusinessunit"
+"Bratislava","deff37c2-b481-f011-b4cc-6045bdf6050e","Slovak IT Services s.r.o.","100000001","office@slovak-it.sk","","+421 2 123 456","87654321","1","0","Michalska 10","","","7589966","811 01","6718c5b2-9ca9-ef11-b8e8-000d3a4bac2e"
+"München","9df7dba9-b481-f011-b4cc-6045bdf6050e","XYZ Solutions GmbH","100000002","contact@xyz-solutions.de","","+49 89 123 456","","1","0","Marienplatz 5","","","7589944","80331","6718c5b2-9ca9-ef11-b8e8-000d3a4bac2e"
+"Praha","269da084-b481-f011-b4cc-6045bdf6050e","ABC Technology s.r.o.","100000000","info@abc-tech.cz","","+420 234 567 890","12345678","1","0","Wenceslas Square 123","","","7589931","110 00","6718c5b2-9ca9-ef11-b8e8-000d3a4bac2e"
