@@ -1,0 +1,58 @@
+**REQ-003: Order Code Auto-Generation Plugin**
+*Business Context:*
+Every Order must have a unique, system-generated Order Code that follows a consistent format for tracking, reporting, and customer communication purposes.
+Functional Requirements:
+
+*Generate unique Order Code automatically on Order creation*
+Format: ORD-YYYY-MMDD-XXXX where:
+
+ORD = Fixed prefix
+YYYY = Current year (4 digits)
+MM = Current month (2 digits, zero-padded)
+DD = Current day (2 digits, zero-padded)
+XXXX = Sequential number (4 digits, zero-padded)
+
+
+Sequential number resets daily (starts at 0001 each day)
+Order Code field becomes read-only after generation
+Handle concurrent Order creation without duplicates
+
+*Technical Requirements:*
+Plugin registration: Pre-Operation, Create message, Order entity
+Execute synchronously to ensure Order Code is set before save
+Query existing Orders for current date to determine next sequence
+Use transaction-safe approach for concurrent scenarios
+Populate new_ordercode field with generated value
+Handle timezone considerations (use organization's timezone)
+
+*Sequential Number Logic (XXXX):*
+Daily Reset Sequential
+
+0001, 0002, 0003... per day
+Query: Count Orders created today + 1
+
+*Error Handling:*
+Log all generation attempts and failures
+Throw InvalidPluginExecutionException for critical failures
+Ensure plugin doesn't prevent Order creation on non-critical errors
+Handle null/empty date scenarios gracefully
+
+*Performance Requirements:*
+Plugin execution time < 500ms
+Minimal database queries (1-2 queries max)
+Efficient duplicate checking algorithm
+No impact on Order creation user experience
+
+*Acceptance Criteria:*
+Every new Order gets unique Order Code automatically
+Format strictly follows ORD-YYYY-MMDD-XXXX pattern
+No duplicate codes generated under any circumstances
+Plugin works correctly during high-volume concurrent creation
+Order Code visible immediately after Order save
+Existing Orders remain unaffected
+
+*Security Considerations:*
+Plugin runs in sandbox mode
+No external service dependencies
+Use only approved Dataverse APIs
+Proper input validation and sanitization
