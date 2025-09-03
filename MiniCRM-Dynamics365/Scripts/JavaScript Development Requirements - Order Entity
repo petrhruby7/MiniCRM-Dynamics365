@@ -1,0 +1,87 @@
+**REQ-004: Manager Approval Field Visibility Logic**
+*Business Context:*
+High-value orders (above 10,000 CZK) require manager approval before processing. The Manager Approval field should only be visible for orders that require approval to maintain clean UI and prevent unnecessary data entry.
+
+*Functional Requirements:*
+Show Manager Approval field when Order Amount > 10,000 CZK
+Hide Manager Approval field when Order Amount ≤ 10,000 CZK
+Clear Manager Approval value when field becomes hidden
+Apply logic on form load and amount field changes
+Handle null/empty amount values gracefully
+
+*Technical Requirements:*
+OnLoad event handler for initial field visibility
+OnChange event handler for Amount field
+Dynamic field visibility using setVisible() method
+Clear field value when hiding to prevent data inconsistencies
+Handle currency field type and potential null values
+
+*UI Behavior:*
+Smooth show/hide transition without form refresh
+Field appears in same location when shown
+No visual artifacts during visibility changes
+Consistent behavior across different form types (create/update)
+
+*Edge Cases:*
+Amount field cleared/null - hide approval field
+Amount exactly equals 10,000 - hide approval field (≤ threshold)
+Form load with pre-existing high amount - show approval field
+Currency conversion scenarios (if multi-currency enabled)
+
+*Acceptance Criteria:*
+Manager Approval field visible only when Amount > 10,000 CZK
+Field hidden immediately when Amount drops to ≤ 10,000 CZK
+Manager Approval value cleared when field hidden
+Logic works on both create and update forms
+No JavaScript errors in browser console
+
+
+**REQ-005: Order Completion Validation Logic**
+*Business Context:*
+Orders should only be marked as "Completed" when all associated Work Items are finished. This prevents premature order closure and ensures all deliverables are completed before customer notification.
+
+*Functional Requirements:*
+Validate all Work Items are completed before allowing Order Status = "Completed"
+Block status change if incomplete Work Items exist
+Display clear error message listing incomplete Work Items
+Allow status change if no Work Items exist (edge case handling)
+Provide option to view incomplete Work Items
+
+*Technical Requirements:*
+OnChange event handler for Order Status field
+WebApi query to retrieve related Work Items
+Filter for incomplete Work Items (Status ≠ "Completed")
+preventDefault() to block form save when validation fails
+Clear validation error when status changed to non-Completed
+
+*Work Item Status Validation:*
+Query Work Items where:
+Order lookup = current Order ID
+Status ≠ "Completed" (New, In Progress, On Hold)
+Include Work Item names in error message
+
+*Error Handling:*
+Display notification with incomplete Work Item names
+Use setNotification() on Order Status field
+Provide actionable error message
+Handle WebApi query failures gracefully
+Clear notifications when validation passes
+
+*User Experience:*
+Immediate feedback when selecting "Completed" status
+Clear indication of blocking Work Items
+Ability to navigate to incomplete Work Items
+Professional error messaging
+
+*Performance Requirements:*
+Validation completes within 2 seconds
+Minimal database queries (single WebApi call)
+Efficient filtering of Work Item results
+No impact on normal status changes
+
+*Acceptance Criteria:*
+Cannot set Order Status to "Completed" with incomplete Work Items
+Clear error message showing specific incomplete Work Items
+Validation only applies to "Completed" status change
+Other status changes work normally
+Error clears when status changed away from "Completed"
