@@ -36,52 +36,27 @@ Logic works on both create and update forms
 No JavaScript errors in browser console
 
 
-**REQ-005: Order Completion Validation Logic**
+**REQ-005: Dynamic Order Status Management**
+
 *Business Context:*
-Orders should only be marked as "Completed" when all associated Work Items are finished. This prevents premature order closure and ensures all deliverables are completed before customer notification.
+Order status must follow the approval workflow, preventing invalid transitions and keeping consistency with Manager Approval.
 
 *Functional Requirements:*
-Validate all Work Items are completed before allowing Order Status = "Completed"
-Block status change if incomplete Work Items exist
-Display clear error message listing incomplete Work Items
-Allow status change if no Work Items exist (edge case handling)
-Provide option to view incomplete Work Items
+The system must always display the core statuses Draft, In Progress, and Cancelled. 
+The option Waiting for Approval is shown only when the Manager Approval field is visible and equals No or null. 
+When Manager Approval is set to Yes, the option Approved becomes available and the user is prompted to confirm auto-setting the status to Approved. 
+The Completed status is never shown, as it is handled separately by REQ-006. 
+If the status changes from Approved to any other value, the Manager Approval field is automatically reset to No.
 
 *Technical Requirements:*
-OnChange event handler for Order Status field
-WebApi query to retrieve related Work Items
-Filter for incomplete Work Items (Status ≠ "Completed")
-preventDefault() to block form save when validation fails
-Clear validation error when status changed to non-Completed
-
-*Work Item Status Validation:*
-Query Work Items where:
-Order lookup = current Order ID
-Status ≠ "Completed" (New, In Progress, On Hold)
-Include Work Item names in error message
-
-*Error Handling:*
-Display notification with incomplete Work Item names
-Use setNotification() on Order Status field
-Provide actionable error message
-Handle WebApi query failures gracefully
-Clear notifications when validation passes
-
-*User Experience:*
-Immediate feedback when selecting "Completed" status
-Clear indication of blocking Work Items
-Ability to navigate to incomplete Work Items
-Professional error messaging
-
-*Performance Requirements:*
-Validation completes within 2 seconds
-Minimal database queries (single WebApi call)
-Efficient filtering of Work Item results
-No impact on normal status changes
+On form load, status options must be initialized. 
+Changes to Manager Approval must dynamically update the available options and handle the auto-approval confirmation. 
+Changes to Order Status must trigger resetManagerApprovalOnStatusChange to keep values consistent. 
+Status option handling is implemented using addOption and removeOption, and integrates with the Manager Approval visibility logic (REQ-004).
 
 *Acceptance Criteria:*
-Cannot set Order Status to "Completed" with incomplete Work Items
-Clear error message showing specific incomplete Work Items
-Validation only applies to "Completed" status change
-Other status changes work normally
-Error clears when status changed away from "Completed"
+Core statuses are always available. 
+Waiting for Approval is displayed only for high-value orders without approval. 
+Approved requires Manager Approval = Yes and user confirmation. 
+Completed is never displayed. 
+When status is changed away from Approved, Manager Approval is reset to No.
