@@ -3,9 +3,10 @@
  * OnLoad event handler for Order entity
  * @param {*} executionContext 
  */
-var new_order_onLoad = function (executionContext){
+var new_order_onLoad = async function (executionContext){
     const formContext = executionContext.getFormContext();
     manageManagerApprovalVisibility(formContext);
+    await manageOrderStatusOptions (formContext);
 }
 
 /**
@@ -35,6 +36,34 @@ var manageManagerApprovalVisibility = function (formContext){
         } else {
             managerApprovalControl.setVisible(false);
             new_managerapproval.setValue(null);
+        }
+    }
+}
+
+/**
+ * Manages the display of the "Completed" option in the "new_orderstatus" OptionSet 
+ * according to the status of the related work items
+ * @param {*} formContext 
+ */
+var manageOrderStatusOptions = async function (formContext){
+    const orderStatusControl = formContext.getControl("new_orderstatus");
+    const currentOrderId = formContext.data.entity.getId().replace(/{|}/g, '').toLowerCase();;
+
+    if (orderStatusControl) {
+        //always remove Completed option - protection of duplicates
+        orderStatusControl.removeOption(100000004) //Complete
+        // Order does not have Id on create form - retrieve isn't neccesary
+        if (currentOrderId){
+            //return current order work items which are not complete (100000002)
+            const result = await Xrm.WebApi.retrieveMultipleRecords(
+                "new_workitem",
+                `?$filter=_new_order_value eq '${currentOrderId}' and new_workitemstatus ne 100000002`
+            )
+            
+            // Add Completed option when no work item is founded
+            if (!result || result.entities.length === 0) {
+                orderStatusControl.addOption({text:"Completed", value: 100000004}, 5)
+            }
         }
     }
 }
