@@ -1,0 +1,44 @@
+**REQ-006: Work Item Auto-Completion Plugin**
+*Business Context:*
+When all Work Items within an Order are completed, the Order should automatically transition to "Completed" status to streamline project closure and eliminate manual status management overhead.
+
+*Functional Requirements:*
+Monitor Work Item status changes to "Completed"
+Query all Work Items for the parent Order
+Automatically set Order status to "Completed" when all Work Items finished
+Only trigger on Work Item updates, not creates or deletes
+Handle edge cases (Orders with no Work Items, mixed statuses)
+
+*Technical Requirements:*
+Plugin registration: Post-Operation, Update message, Work Item entity
+Execute after Work Item status change is committed to database
+Query parent Order and all related Work Items
+Validate all Work Items have Status = "Completed" (100000002)
+Update parent Order Status to "Completed" if validation passes
+Use efficient querying to minimize performance impact
+
+*Query Logic:*
+Get parent Order ID from updated Work Item
+Query all Work Items where Order = parent Order ID
+Count Work Items where Status ≠ "Completed"
+If count = 0, update Order Status to "Completed"
+
+*Error Handling:*
+Log all processing attempts and outcomes
+Handle missing parent Order gracefully
+Prevent infinite loops (Order update triggering Work Item updates)
+Throw exceptions only for critical system failures
+Continue processing if Order update fails (don't block Work Item save)
+
+*Performance Considerations:*
+Single query to check all Work Items per Order
+Minimize database round trips
+Execute only when Work Item status actually changed
+Efficient filtering to avoid unnecessary processing
+
+*Acceptance Criteria:*
+Order automatically becomes "Completed" when last Work Item completed
+No manual Order status management required
+Works correctly with concurrent Work Item updates
+No performance degradation on Work Item operations
+Proper logging for audit and troubleshooting
